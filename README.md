@@ -31,6 +31,7 @@
   • The radio button inputs may be modified by entering whatever desired number in the input value and reflecting such in the input content, e.g.:
 
   ``` <input type="radio" name="duration" value="25" id="radio3">
-      <label for="radio3">25 min</label>```
+      <label for="radio3">25 min</label>
+  ```
 
   In this example, radio button 3 will register 25min on the countdown clock instead of its 15min default setting. Though it will function, the clock code will not format any value greater than 59mins to reflect hours, days, et cetera. It will also produce undesirable behavior in not showing more than two digits in either minute or second text fields.
