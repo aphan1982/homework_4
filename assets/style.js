@@ -1,30 +1,43 @@
-var quizDuration = 4;
 var startQuizBtn = document.getElementById("startQuizBtn");
-var timeSelection = document.getElementsByName("duration");
 
-function setTime() {
-  for (i = 0; i < timeSelection.length; i++) {
-    if (timeSelection[i].checked) {
-      quizDuration = parseInt(timeSelection[i].value);
+function beginQuiz() {
+  var timeSelection = document.getElementsByName("duration");
+  // Takes user input from radio buttons, determines length of quiz in minutes and seconds:
+  var quizDuration = setTime();
+  function setTime() {
+    for (i = 0; i < timeSelection.length; i++) {
+      if (timeSelection[i].checked) {
+        return parseInt((timeSelection[i].value) * 60);
+      }
     }
-  }
-  console.log(quizDuration);
-}
-
-function startClock() {
-  // causes countdown to begin immediately upon click:
-  quizDuration--;
-  document.getElementById("timer").innerHTML = quizDuration;
-  // causes countdown to continue in 1sec intervals:
-  var interval = setInterval(runClock, 1000);
-  function runClock() {
+  };
+  
+  // Initiates and regulates the countdown timer:
+  function startClock() {
+    // Converts milliseconds to clock format:
+    function convertClock(rawTime) {
+      var minutes = "0" + Math.floor(rawTime / 60);
+      var seconds = "0" + Math.floor(rawTime % 60);
+      return minutes.slice(-2) + ":" + seconds.slice(-2);
+    };
+    // Initiates countdown immediately upon click:
     quizDuration--;
-    document.getElementById("timer").innerHTML = quizDuration;
-    if (quizDuration === 0) {
-      clearInterval(interval);
-      alert("Time's up!");
-    }
-  }
+    document.getElementById("timer").innerHTML = convertClock(quizDuration);
+    // Continues countdown in 1sec intervals:
+    var interval = setInterval(runClock, 1000);
+    function runClock() {
+      quizDuration--;
+      document.getElementById("timer").innerHTML = convertClock(quizDuration);
+      // Terminates countdown at zero:
+      if (quizDuration === 0) {
+        clearInterval(interval);
+        alert("Time's up!");
+      }
+    };
+  };
+  setTime();
+  startClock();
 }
 
-startQuizBtn.addEventListener("click", startClock);
+
+startQuizBtn.addEventListener("click", beginQuiz);
