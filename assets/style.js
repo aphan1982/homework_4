@@ -1,3 +1,25 @@
+var quest1 = [[".log()", false], [".splice()", true],[".moveTo()", false],["All of the above", false],["None of the above", false], "What method can be used to remove one or more items from an array?"];
+
+var quest2 = [["Add elements such as <p> or <li>", false], ["Listen for events to trigger behavior", false],["Update text content", false],["All of the above", true],["None of the above", false], "Which of the following can JavaScript do dynamically?"];
+
+var quest3 = [["Able to withstand cyber attacks", false], ["Able to be changed through methods, functions, and variables", true],["Able to enhance Search Engine Optimization", false],["All of the above", false],["None of the above", false], "\"Dynamic\" means what in the context of JavaScript?"];
+
+var quest4 = [["Brendan Eich", true], ["Yukihiro Matsumoto", false],[".Chris Beard", false],["Tim Berners-Lee", false],["James Gosling", false], "Who developed JavaScript?"];
+
+var quest5 = [["Brackets: [ ]", false], ["Question marks: ¿ ?", false],["Angle brackets: < >", false],["Double periods: .. ..", false],["None of the above", true], "What special characters are used to indicate a JavaScript function?"];
+
+var quest6 = [["Eliminates whitespace from code before a page is loaded", false], ["A factor that can determine how many times a function is executed", true],["A command that displays information the DOM", false],["All of the above", false],["None of the above", false], "An \"iterator\" is something that does what?"];
+
+var quest7 = [["Putting a variable at the top of its scope regardless if it's been declared yet", true], ["Placing the variable higher in relation to other variables", false],["Stealing from another developer without giving proper credit", false],["Declaring a variable before the <head> section in HTML", false],["None of the above", false], "\"Hoisting\" a variable means what?"];
+
+var quest8 = [["Direct Onboard Matriculation", false], ["Dynamic Output Manipulation", false],["Document Object Model", true],["Dumb Old Macintosh", false],["Data-Organized Material", false], "DOM stands for what?"];
+
+var quest9 = [["var rock = musicTypes.popular[0];", false], ["if (newRock >+ oldRock)...", true],["document.body.appendChild(t);", false],["console.log(newRock);", false],["for (var i = 0; i < rock.length; i++)...", false], "What is NOT an example of acceptable JavaScript syntax?"];
+
+var quest10 = [["return", false], ["debugger", false],["switch", false],["All of the above", true],["None of the above", false], "Which of the following words CANNOT be used as a variable, label, or function name in JavaScript?"];
+
+var questMatrix = [quest1, quest2, quest3, quest4, quest5, quest6, quest7, quest8, quest9, quest10];
+
 var startQuizBtn = document.getElementById("startQuizBtn");
 
 function beginQuiz() {
@@ -6,7 +28,7 @@ function beginQuiz() {
   // Takes user input from radio buttons, determines length of quiz in minutes and seconds:
   var quizDuration = setTime();
   function setTime() {
-    for (i = 0; i < timeSelection.length; i++) {
+    for (var i = 0; i < timeSelection.length; i++) {
       if (timeSelection[i].checked) {
         return parseInt((timeSelection[i].value) * 60);
       }
@@ -16,10 +38,10 @@ function beginQuiz() {
   // The number of questions is derivative of the length of quiz:
   // var numOfQuestions = Math.floor(quizDuration / 30);
   
-  // function generateQuestion() {
+  // function genQuestion() {
   //   var usedQuestions = [];
   //   function selQuestions() {
-  //     for (i = 0; i > numOfQuestions; i++) {
+  //     for (var i = 0; i > numOfQuestions; i++) {
   //       usedQuestions[i] = Math.floor(Math.random() * );
   //     }
   //     return usedQuestions;
@@ -48,6 +70,24 @@ function beginQuiz() {
         alert("Time's up!");
       }
     };
+
+    // Randomly selects quiz questions and displays them:
+    
+    var questSelect = Math.floor(Math.random() * questMatrix.length);
+
+    var questTitle = $("<h1 id='questHeading'></h1>");
+    questTitle.text(questMatrix[questSelect][5]);
+    $("#answerField").append(questTitle);
+
+    for (var i = 0; i < 5; i++) {
+        var answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
+        answerOptions.text(questMatrix[questSelect][i][0]);
+        $("#answerField").append(answerOptions);
+      };
+      var btnIDs = $(".btn");
+      console.log(btnIDs);
+      for (var i = 0; i < btnIDs.length; i++)
+      btnIDs[i].id = 'btn' + (i + 1);
   };
 
   setTime();
@@ -59,11 +99,28 @@ startQuizBtn.addEventListener("click", beginQuiz);
 
 
 
+
 // RESOURCES/POTENTIAL CODE:
 // var answerSequence;
 // var orderedList;
 
-// var question1 = [["Red", true], ["Green", false],["Purple", false],["All of the Above", false],["None of the Above", false], "What color is Anthony's favorite?"];
+// var quest1 = [["Red", true], ["Green", false],["Purple", false],["All of the Above", false],["None of the Above", false], "What color is Anthony's favorite?"];
+
+// var testNums = [ { name: 0, isTrue: true }, { name: 1, isTrue: false }, { name: 2, isTrue: false }, { name: 3, isTrue: false }, { name: 4, isTrue: false }];
+
+// var thingItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+// for (var i = 0; i < 5; i++) {
+//   var newThing = $("<li class='questLI'>");
+//   newThing.text("This is an example of question #" + thingItems[i]);
+//   $("#questOL").append(newThing);
+// };
+
+// for (var i = 0; i < 4; i++) {
+// var newDiv = $("<div>");
+// newDiv.text("A pleasure to meet you, " + testNums[i].name + "!");
+// $("#empty-div").append(newDiv);
+// newDiv.attr("class", "fancy");
+// };
 
 // BETTER RANDOMIZER:
 // Randomizes the order of answer options, but only the first three, so as to maintain options 4 & 5 as "All/None of the Above", respectively:
@@ -80,7 +137,7 @@ startQuizBtn.addEventListener("click", beginQuiz);
 
 
 // function formQuestion() {
-//   for (i = 0; i < 5; i++) {
+//   for (var i = 0; i < 5; i++) {
 //     console.log(question1[answerSequence[i]][0]);
 //   }
 // };
@@ -89,7 +146,7 @@ startQuizBtn.addEventListener("click", beginQuiz);
 // function shuffle4(arr) {
 //   var newSpot;
 //   var placeholderSpot;
-//   for (i = 3; i > 0; i--) {
+//   for (var i = 3; i > 0; i--) {
 //     newSpot = Math.floor(Math.random() * (i + 1));
 //     placeholderSpot = arr[i];
 //     arr[i] = arr[newSpot];
@@ -101,7 +158,7 @@ startQuizBtn.addEventListener("click", beginQuiz);
 // function shuffle5(arr) {
 //   var newSpot;
 //   var placeholderSpot;
-//   for (i = 4; i > 0; i--) {
+//   for (var i = 4; i > 0; i--) {
 //     newSpot = Math.floor(Math.random() * (i + 1));
 //     placeholderSpot = arr[i];
 //     arr[i] = arr[newSpot];
@@ -112,4 +169,4 @@ startQuizBtn.addEventListener("click", beginQuiz);
 
 
 // SAMPLE QUESTION SET:
-// var question1 = [ { name: "red", isTrue: false }, { name: "orange", isTrue: false }, { name: "green", isTrue: false }, { name: "blue", isTrue: true }, { name: "all of the above", isTrue: false } ];
+// var quest1 = [ { name: "red", isTrue: false }, { name: "orange", isTrue: false }, { name: "green", isTrue: false }, { name: "blue", isTrue: true }, { name: "all of the above", isTrue: false } ];
