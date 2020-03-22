@@ -4,7 +4,7 @@ var quest2 = [["Add elements such as <p> or <li>", false], ["Listen for events t
 
 var quest3 = [["Able to withstand cyber attacks", false], ["Able to be changed through methods, functions, and variables", true],["Able to enhance Search Engine Optimization", false],["All of the above", false],["None of the above", false], "\"Dynamic\" means what in the context of JavaScript?"];
 
-var quest4 = [["Brendan Eich", true], ["Yukihiro Matsumoto", false],[".Chris Beard", false],["Tim Berners-Lee", false],["James Gosling", false], "Who developed JavaScript?"];
+var quest4 = [["Brendan Eich", true], ["Yukihiro Matsumoto", false],["Chris Beard", false],["Tim Berners-Lee", false],["James Gosling", false], "Who developed JavaScript?"];
 
 var quest5 = [["Brackets: [ ]", false], ["Question marks: ¿ ?", false],["Angle brackets: < >", false],["Double periods: .. ..", false],["None of the above", true], "What special characters are used to indicate a JavaScript function?"];
 
@@ -20,12 +20,11 @@ var quest10 = [["return", false], ["debugger", false],["switch", false],["All of
 
 var questMatrix = [quest1, quest2, quest3, quest4, quest5, quest6, quest7, quest8, quest9, quest10];
 
-var startQuizBtn = document.getElementById("startQuizBtn");
+var interval;
 
 function beginQuiz() {
-  var timeSelection = document.getElementsByName("duration");
-  
   // Takes user input from radio buttons, determines length of quiz in minutes and seconds:
+  var timeSelection = $("[name='duration']");
   var quizDuration = setTime();
   function setTime() {
     for (var i = 0; i < timeSelection.length; i++) {
@@ -38,16 +37,6 @@ function beginQuiz() {
   // The number of questions is derivative of the length of quiz:
   // var numOfQuestions = Math.floor(quizDuration / 30);
   
-  // function genQuestion() {
-  //   var usedQuestions = [];
-  //   function selQuestions() {
-  //     for (var i = 0; i > numOfQuestions; i++) {
-  //       usedQuestions[i] = Math.floor(Math.random() * );
-  //     }
-  //     return usedQuestions;
-  //   }
-  // };
-  
   // Initiates and regulates the countdown timer:
   function startClock() {
     // Converts milliseconds to clock format:
@@ -58,45 +47,111 @@ function beginQuiz() {
     };
     // Initiates countdown immediately upon click:
     quizDuration--;
-    document.getElementById("timer").innerHTML = convertClock(quizDuration);
+    $("#timer").text(convertClock(quizDuration));
     // Continues countdown in 1sec intervals:
-    var interval = setInterval(runClock, 1000);
+    interval = setInterval(runClock, 1000);
     function runClock() {
       quizDuration--;
-      document.getElementById("timer").innerHTML = convertClock(quizDuration);
+      $("#timer").text(convertClock(quizDuration));
       // Terminates countdown at zero:
       if (quizDuration === 0) {
         clearInterval(interval);
         alert("Time's up!");
       }
     };
-
-    // Randomly selects quiz questions and displays them:
     
-    var questSelect = Math.floor(Math.random() * questMatrix.length);
-
-    var questTitle = $("<h1 id='questHeading'></h1>");
-    questTitle.text(questMatrix[questSelect][5]);
-    $("#answerField").append(questTitle);
-
-    for (var i = 0; i < 5; i++) {
-        var answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
-        answerOptions.text(questMatrix[questSelect][i][0]);
-        $("#answerField").append(answerOptions);
-      };
-      var btnIDs = $(".btn");
-      console.log(btnIDs);
-      for (var i = 0; i < btnIDs.length; i++)
-      btnIDs[i].id = 'btn' + (i + 1);
   };
-
   setTime();
   startClock();
+};
+
+
+// Randomly selects quiz questions and displays them:
+function genQuestion() {
+  var ansIsTrue;
+  // Displays question as header:
+  var questSelect = Math.floor(Math.random() * questMatrix.length);
+  var questTitle = $("<h1 id='questHeading'></h1>");
+  questTitle.text(questMatrix[questSelect][5]);
+  $("#answerField").append(questTitle);
+  // Lists potential answers, evaluates the truthiness of each, displays on the DOM, and assigns a unique button ID:
+  for (var i = 0; i < 5; i++) {
+    var answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
+    answerOptions.text(questMatrix[questSelect][i][0]);
+    if (questMatrix[questSelect][i][1] === true) {
+      answerOptions.addClass("true");
+    }
+    $("#answerField").append(answerOptions);
+    var btnIDs = $(".btn");
+    btnIDs[i].id = "btn" + i;
+    console.log(btnIDs);
+    // document.querySelectorAll(".btn").classList.add((questMatrix[questSelect][i][1]).value);
+  };
+  // for (var i = 0; i < btnIDs.length; i++) {
+  // };
+
+  var btnsToCheck = $(".btn-primary");
+  var checker = function(event) {
+    event.preventDefault();
+    if (btnsToCheck.hasClass("true")) {
+      alert("Yay!");
+    } else {
+      alert("WRONG!!!");
+    };
+  for (var i = 0; i < btnsToCheck.length; i++) {
+    btnsToCheck[i].on("click", checker);
+  };
+  }
 }
+//   .on("click", function(event) {
+//     event.preventDefault();
+//     var btnCheck = $(".btn-primary");
+//     for (var i = 0; i < btnCheck.length; i++) {
+//       if (btnCheck.hasClass("true")) {
+//         alert("Yay!");
+//       } else {
+//         alert("WRONG!!!");
 
 
-startQuizBtn.addEventListener("click", beginQuiz);
+//         var btnCheck = $(".btn-primary");
 
+// var checker = function() {
+//     var attribute = this.getAttribute("data-myattribute");
+//     alert(attribute);
+// };
+
+// for (var i = 0; i < elements.length; i++) {
+//     elements[i].addEventListener('click', myFunction, false);
+// }
+
+
+//       };
+//     }
+//   });
+// };
+
+
+var startBtnClicked = false;
+$("#startQuizBtn").on("click", function(event) {
+  event.preventDefault();
+  if (!startBtnClicked) {
+    startBtnClicked = true;
+    $("#startQuizBtn").text("End Quiz");
+    beginQuiz();
+    genQuestion();
+  } else {
+    clearInterval(interval);
+    alert("You've chosen to stop!");
+    var resetBtn = $("<button type='button' class='btn btn-danger'>Reset</button>");
+    $("#btnContainer").append(resetBtn);
+    $(".btn-danger").on("click", function(event) {
+      event.preventDefault();
+      $("#timer").text("00:00");
+    });
+  };
+});
+
+// genQuestion();
 
 
 
