@@ -21,13 +21,15 @@ var quest10 = [["return", false], ["debugger", false],["switch", false],["All of
 var questMatrix = [quest1, quest2, quest3, quest4, quest5, quest6, quest7, quest8, quest9, quest10];
 
 var interval;
+var numOfQuestions;
+var quizDuration;
 var scoreRegistry = 0;
 $("#scoreRegistry").text("Score: " + scoreRegistry);
 
 function beginQuiz() {
   // Takes user input from radio buttons, determines length of quiz in minutes and seconds:
   var timeSelection = $("[name='duration']");
-  var quizDuration = setTime();
+  quizDuration = setTime();
   function setTime() {
     for (var i = 0; i < timeSelection.length; i++) {
       if (timeSelection[i].checked) {
@@ -37,7 +39,8 @@ function beginQuiz() {
   };
   
   // The number of questions is derivative of the length of quiz:
-  // var numOfQuestions = Math.floor(quizDuration / 30);
+  numOfQuestions = Math.floor(quizDuration / 25);
+  console.log(numOfQuestions);
   
   // Initiates and regulates the countdown timer:
   function startClock() {
@@ -116,45 +119,38 @@ function genQuestion() {
       genQuestion();
     };
   });
-
-  console.log(questSelectRecord);
-
-  var btnsToCheck = $(".btn-primary");
-  var checker = function(event) {
-    event.preventDefault();
-    if (btnsToCheck.hasClass("true")) {
-      alert("Yay!");
-    } else {
-      alert("WRONG!!!");
-    };
-  for (var i = 0; i < btnsToCheck.length; i++) {
-    btnsToCheck[i].on("click", checker);
-  };
-  }
 };
 
 
 var startBtnClicked = false;
-$("#startQuizBtn").on("click", function(event) {
+$("#startQuizBtn").on("click", buttonCycle);
+  function buttonCycle() {
   event.preventDefault();
   if (!startBtnClicked) {
     startBtnClicked = true;
-    $("#startQuizBtn").text("End Quiz");
+    $("#startQuizBtn").html("&#128308;  Stop Quiz");
     beginQuiz();
     genQuestion();
   } else {
     clearInterval(interval);
     alert("You've chosen to stop!");
-    var resetBtn = $("<button type='button' class='btn btn-danger'>Reset</button>");
+    $("#startQuizBtn").html("&#9940;  &#9888;&#65039;  &#9940;");
+    $("#startQuizBtn").off("click");
+    var resetBtn = $("<button type='button' class='btn btn-danger' id='resetBtn'>&#128260;  Reset</button>");
     $("#btnContainer").append(resetBtn);
     $(".btn-danger").on("click", function(event) {
       event.preventDefault();
       $("#timer").text("00:00");
       scoreRegistry = 0;
       $("#scoreRegistry").text("Score: " + scoreRegistry);
+      $("#answerField").empty();
+      startBtnClicked = false;
+      $("#startQuizBtn").html("&#128994;  Start Quiz");
+      $("#startQuizBtn").on("click", buttonCycle);
+      $("#resetBtn").remove();
     });
   };
-});
+};
 
 // genQuestion();
 
