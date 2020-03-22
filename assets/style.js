@@ -21,6 +21,8 @@ var quest10 = [["return", false], ["debugger", false],["switch", false],["All of
 var questMatrix = [quest1, quest2, quest3, quest4, quest5, quest6, quest7, quest8, quest9, quest10];
 
 var interval;
+var scoreRegistry = 0;
+$("#scoreRegistry").text("Score: " + scoreRegistry);
 
 function beginQuiz() {
   // Takes user input from radio buttons, determines length of quiz in minutes and seconds:
@@ -77,35 +79,45 @@ function genQuestion() {
   };
   setQuestNum();
   if (questSelectRecord.includes(questSelect)) {
-    setQuestNum();
-  } else {
-    questSelectRecord.push(questSelect);
-    var questTitle = $("<h1 id='questHeading'></h1>");
-    questTitle.text(questMatrix[questSelect][5]);
-    $("#answerField").append(questTitle);
-    // Lists potential answers, evaluates the truthiness of each, displays on the DOM, and assigns a unique button ID:
-    for (var i = 0; i < 5; i++) {
-      var answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
-      answerOptions.text(questMatrix[questSelect][i][0]);
-      if (questMatrix[questSelect][i][1] === true) {
-        answerOptions.addClass("true");
+    while (questSelectRecord.includes(questSelect)) {
+      setQuestNum();
+      if (questSelectRecord.includes(!questSelect)) {
+        break;
       };
-      $("#answerField").append(answerOptions);
-      var btnIDs = $(".btn");
-      btnIDs[i].id = "btn" + i;
     };
-    $(".btn").click(function() {
-      var btnSelected = $(this);
-      if (btnSelected.hasClass("true")) {
-        alert("Yay!");
-      } else if (!btnSelected.hasClass("true")) {
-        alert("BOOO!!!");
-      };
-    });
-    // document.querySelectorAll(".btn").classList.add((questMatrix[questSelect][i][1]).value);
   };
-  // for (var i = 0; i < btnIDs.length; i++) {
-  // };
+  questSelectRecord.push(questSelect);
+  var questTitle = $("<h1 id='questHeading'></h1>");
+  questTitle.text(questMatrix[questSelect][5]);
+  $("#answerField").append(questTitle);
+  // Lists potential answers, evaluates the truthiness of each, displays on the DOM, and assigns a unique button ID:
+  for (var i = 0; i < 5; i++) {
+    var answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
+    answerOptions.text(questMatrix[questSelect][i][0]);
+    if (questMatrix[questSelect][i][1] === true) {
+      answerOptions.addClass("true");
+    };
+    $("#answerField").append(answerOptions);
+    var btnIDs = $(".btn");
+    btnIDs[i].id = "btn" + i;
+  };
+  $(".btn").click(function() {
+    var btnSelected = $(this);
+    if (btnSelected.hasClass("true")) {
+      alert("Yay!");
+      scoreRegistry = scoreRegistry + 100;
+      console.log(scoreRegistry);
+      $("#scoreRegistry").text("Score: " + scoreRegistry);
+      $("#answerField").empty();
+      genQuestion();
+    } else if (!btnSelected.hasClass("true")) {
+      alert("BOOO!!!");
+      $("#answerField").empty();
+      genQuestion();
+    };
+  });
+
+  console.log(questSelectRecord);
 
   var btnsToCheck = $(".btn-primary");
   var checker = function(event) {
@@ -119,33 +131,7 @@ function genQuestion() {
     btnsToCheck[i].on("click", checker);
   };
   }
-}
-//   .on("click", function(event) {
-//     event.preventDefault();
-//     var btnCheck = $(".btn-primary");
-//     for (var i = 0; i < btnCheck.length; i++) {
-//       if (btnCheck.hasClass("true")) {
-//         alert("Yay!");
-//       } else {
-//         alert("WRONG!!!");
-
-
-//         var btnCheck = $(".btn-primary");
-
-// var checker = function() {
-//     var attribute = this.getAttribute("data-myattribute");
-//     alert(attribute);
-// };
-
-// for (var i = 0; i < elements.length; i++) {
-//     elements[i].addEventListener('click', myFunction, false);
-// }
-
-
-//       };
-//     }
-//   });
-// };
+};
 
 
 var startBtnClicked = false;
@@ -164,6 +150,8 @@ $("#startQuizBtn").on("click", function(event) {
     $(".btn-danger").on("click", function(event) {
       event.preventDefault();
       $("#timer").text("00:00");
+      scoreRegistry = 0;
+      $("#scoreRegistry").text("Score: " + scoreRegistry);
     });
   };
 });
