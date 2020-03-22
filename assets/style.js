@@ -65,26 +65,43 @@ function beginQuiz() {
   startClock();
 };
 
+var questSelectRecord = [];
+
 
 // Randomly selects quiz questions and displays them:
 function genQuestion() {
-  var ansIsTrue;
   // Displays question as header:
-  var questSelect = Math.floor(Math.random() * questMatrix.length);
-  var questTitle = $("<h1 id='questHeading'></h1>");
-  questTitle.text(questMatrix[questSelect][5]);
-  $("#answerField").append(questTitle);
-  // Lists potential answers, evaluates the truthiness of each, displays on the DOM, and assigns a unique button ID:
-  for (var i = 0; i < 5; i++) {
-    var answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
-    answerOptions.text(questMatrix[questSelect][i][0]);
-    if (questMatrix[questSelect][i][1] === true) {
-      answerOptions.addClass("true");
-    }
-    $("#answerField").append(answerOptions);
-    var btnIDs = $(".btn");
-    btnIDs[i].id = "btn" + i;
-    console.log(btnIDs);
+  var questSelect;
+  function setQuestNum() {
+    questSelect = Math.floor(Math.random() * questMatrix.length);
+  };
+  setQuestNum();
+  if (questSelectRecord.includes(questSelect)) {
+    setQuestNum();
+  } else {
+    questSelectRecord.push(questSelect);
+    var questTitle = $("<h1 id='questHeading'></h1>");
+    questTitle.text(questMatrix[questSelect][5]);
+    $("#answerField").append(questTitle);
+    // Lists potential answers, evaluates the truthiness of each, displays on the DOM, and assigns a unique button ID:
+    for (var i = 0; i < 5; i++) {
+      var answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
+      answerOptions.text(questMatrix[questSelect][i][0]);
+      if (questMatrix[questSelect][i][1] === true) {
+        answerOptions.addClass("true");
+      };
+      $("#answerField").append(answerOptions);
+      var btnIDs = $(".btn");
+      btnIDs[i].id = "btn" + i;
+    };
+    $(".btn").click(function() {
+      var btnSelected = $(this);
+      if (btnSelected.hasClass("true")) {
+        alert("Yay!");
+      } else if (!btnSelected.hasClass("true")) {
+        alert("BOOO!!!");
+      };
+    });
     // document.querySelectorAll(".btn").classList.add((questMatrix[questSelect][i][1]).value);
   };
   // for (var i = 0; i < btnIDs.length; i++) {
