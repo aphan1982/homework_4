@@ -1,3 +1,6 @@
+// **GENERAL FLOW/OPERATION**
+// The user is asked to select between three durations for the quiz. When "Start Quiz" is clicked, a multiple-choice queston will be randomly selected from the matrix of available questions. The truthiness of the corresponding answer choices is evaluated
+
 // QUIZ QUESTION REPOSITORY, each formed as an array with five multiple-choice elements: indices[0-4] containing potential answers and index[5] the actual question, generated above in an <h1> element:
 var quest1 = [[".log()", false], [".splice()", true],[".moveTo()", false],["All of the above", false],["None of the above", false], "What method can be used to remove one or more items from an array?"];
 
@@ -15,20 +18,20 @@ var quest7 = [["Putting a variable at the top of its scope regardless if it's be
 
 var quest8 = [["Direct Onboard Matriculation", false], ["Dynamic Output Manipulation", false],["Document Object Model", true],["Dumb Old Macintosh", false],["Data-Organized Material", false], "DOM stands for what?"];
 
-var quest9 = [["var rock = musicTypes.popular[0];", false], ["if (newRock >+ oldRock)...", true],["document.body.appendChild(t);", false],["console.log(newRock);", false],["for (var i = 0; i < rock.length; i++)...", false], "What is NOT an example of acceptable JavaScript syntax?"];
+var quest9 = [["var rock = musicTypes.popular[0];", false], ["if (newRock >+ oldRock)...", true],["document.body.appendChild(t);", false],["console.log(newRock);", false],["for (var i = 0; i < rock.length; i++)...", false], "What is <em> not </em> an example of acceptable JavaScript syntax?"];
 
-var quest10 = [["return", false], ["debugger", false],["switch", false],["All of the above", true],["None of the above", false], "Which of the following words CANNOT be used as a variable, label, or function name in JavaScript?"];
+var quest10 = [["return", false], ["debugger", false],["switch", false],["All of the above", true],["None of the above", false], "Which of the following words <em> cannot </em> be used as a variable, label, or function name in JavaScript?"];
 
 // QUESTION REPOSITORY MATRIX, combined so as to allow for random selection by the computer:
 var questMatrix = [quest1, quest2, quest3, quest4, quest5, quest6, quest7, quest8, quest9, quest10];
 
+// VARIABLES
 var answerOptions;
 var interval;
-var numOfQuestCalled = 1;
+var numOfQuestCalled = 0;
 var numOfQuestions;
 var questSelect;
 var questSelectRecord = [];
-var questTitle;
 var quizDuration;
 var resetBtn;
 var scoreRegistry = 0;
@@ -38,11 +41,38 @@ $("#scoreRegistry").text("Score: " + scoreRegistry);
 // FUNCTIONS 
 function abortQuiz() {
   clearInterval(interval);
+  numOfQuestCalled = 0;
   alert("You've chosen to stop!");
   $("#startQuizBtn").html("&#9940;  &#9888;&#65039;  &#9940;");
   $("#startQuizBtn").off("click");
 };
 
+// Evalutes the truthiness of answers selected in multiple-choice.
+function answerQuest() {
+  numOfQuestCalled++;
+  var btnSelected = $(this);
+  if (numOfQuestCalled < questMatrix.length) {
+    if (btnSelected.hasClass("true")) {
+      alert("Yay!");
+      scoreRegistry = scoreRegistry + 100;
+      $("#scoreRegistry").text("Score: " + scoreRegistry);
+      $("#answerField").empty();
+      if (numOfQuestCalled < questMatrix.length) {
+        genQuestion();
+      };
+      } else if (!btnSelected.hasClass("true")) {
+      alert("BOOO!!!");
+      $("#answerField").empty();
+      // This is what I'd like to use to subtract time from timer, but I can't get it to work:
+      // quizDuration - 10;
+      genQuestion();
+    };
+  } else {
+    completeQuiz();
+  };
+};
+
+// This displays the potential answers to every multiple-choice question:
 function appendAns() {
   for (var i = 0; i < 5; i++) {
     answerOptions = $("<button type='button' class='btn btn-primary btn-lg btn-block'></button>");
@@ -56,79 +86,76 @@ function appendAns() {
   };
 };
 
+// Sequence of what happens when quiz is started:
 function buttonCycle() {
   if (!startBtnClicked) {
     startBtnClicked = true;
     $("#startQuizBtn").html("&#128308;  Stop Quiz");
-    if (questSelectRecord.length >= numOfQuestions) {
-      alert("Game over!");
-    } else {
-      setTime();
-      startClock();
-      genQuestion();
-    };
+    setTime();
+    startClock();
+    genQuestion();
+    numOfQuestCalled++;
   } else {
     abortQuiz();
     genResetBtn();
   };
 };
 
+// Sequence when quiz is completed:
 function completeQuiz() {
   clearInterval(interval);
-  alert("You've finished!");
+  numOfQuestCalled = 0;
+  alert("Congratulations, you've finished!");
+  if (scoreRegistry > 0) {
+    setHighScore();
+  };
   $("#startQuizBtn").html("&#127775;  &#127881;  &#127775;");
   $("#startQuizBtn").off("click");
-  var resetBtn = $("<button type='button' class='btn btn-danger' id='resetBtn'>&#128260;  Reset</button>");
+  resetBtn = $("<button type='button' class='btn btn-danger' id='resetBtn'>&#128260;  Reset</button>");
   $("#btnContainer").append(resetBtn);
-  $(".btn-danger").on("click", resetQuiz(event));
+  $(".btn-danger").on("click", resetQuiz());
 };
 
+// Randomly selects question from those available:
 function genQuestion() {
   // Displays question as header:
-  getQuestIndex();
-  if (questSelectRecord.includes(questSelect)) {
-    while (questSelectRecord.includes(questSelect)) {
-      getQuestIndex();
-      if (questSelectRecord.includes(!questSelect)) {
-        break;
+  console.log(questMatrix.length);
+  if (numOfQuestCalled <= questMatrix.length) {
+    getQuestIndex();
+    if (questSelectRecord.includes(questSelect)) {
+      while (questSelectRecord.includes(questSelect)) {
+        getQuestIndex();
+        if (questSelectRecord.includes(!questSelect)) {
+          break;
+        };
       };
     };
+    questSelectRecord.push(questSelect);
+    var questTitle = $("<h1 id='questHeading'></h1>");
+    questTitle.html(questMatrix[questSelect][5]);
+    $("#answerField").append(questTitle);
+    // Lists potential answers, evaluates the truthiness of each, displays on the DOM, and assigns a unique button ID:
+    appendAns();
+    $(".btn").on("click", answerQuest);
+    console.log(numOfQuestCalled);
+  } else {
+    completeQuiz();
   };
-  questSelectRecord.push(questSelect);
-  questTitle = $("<h1 id='questHeading'></h1>");
-  questTitle.text(questMatrix[questSelect][5]);
-  $("#answerField").append(questTitle);
-  // Lists potential answers, evaluates the truthiness of each, displays on the DOM, and assigns a unique button ID:
-  appendAns();
-  $(".btn").on("click", function() {
-    numOfQuestCalled++;
-    var btnSelected = $(this);
-    // // numOfQuestAns();
-    if (btnSelected.hasClass("true")) {
-      alert("Yay!");
-      scoreRegistry = scoreRegistry + 100;
-      $("#scoreRegistry").text("Score: " + scoreRegistry);
-      $("#answerField").empty();
-      genQuestion();
-    } else if (!btnSelected.hasClass("true")) {
-      alert("BOOO!!!");
-      $("#answerField").empty();
-      genQuestion();
-    };
-  });
-  console.log(numOfQuestCalled);
 };
 
+// When user aborts quiz, generates button to reset:
 function genResetBtn() {
   resetBtn = $("<button type='button' class='btn btn-danger' id='resetBtn'>&#128260;  Reset</button>");
   $("#btnContainer").append(resetBtn);
   $(".btn-danger").on("click", resetQuiz);
 };
 
+// Function to randomly select quiz question:
 function getQuestIndex() {
   questSelect = Math.floor(Math.random() * questMatrix.length);
 };
 
+// To clear DOM for new quiz:
 function resetQuiz() {
   $("#timer").text("00:00");
   scoreRegistry = 0;
@@ -141,6 +168,27 @@ function resetQuiz() {
   numOfQuestCalled = 1;
 };
 
+// To put high scores in local storage and display on DOM:
+function setHighScore() {
+  var highScoreName = prompt("You've made the high score! Please enter your name for everlasting remembrance:");
+  if (highScoreName === "") {
+    alert("Please enter valid name!");
+    setHighScore();
+  } else {
+    var highScoreEntry = {
+      name: highScoreName,
+      score: scoreRegistry,
+    };
+    console.log(highScoreEntry);
+    var record = [];
+    record = JSON.parse(localStorage.getItem("quiz")) || [];
+    record.push(highScoreEntry);
+    console.log(record);
+    localStorage.setItem("quiz", JSON.stringify(record));
+  };
+};
+
+// Sets the countdown clock based on user preference:
 function setTime() {
   var timeSelection = $("[name='duration']");
   for (var i = 0; i < timeSelection.length; i++) {
@@ -151,6 +199,7 @@ function setTime() {
   numOfQuestions = Math.floor(quizDuration / 25);
 };
 
+// Starts timer:
 function startClock() {
   // Converts milliseconds to clock format:
   function convertClock(rawTime) {
